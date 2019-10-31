@@ -1,4 +1,5 @@
 require 'selenium-webdriver'
+require_relative './pages/pages'
 
 Selenium::WebDriver::Chrome::Service.driver_path="/usr/local/bin/chromedriver"
 Selenium::WebDriver::Firefox::Service.driver_path="/usr/local/bin/geckodriver"
@@ -9,21 +10,14 @@ def run
   teardown
 end
 
-def browser
-  @browser = Selenium::WebDriver.for :firefox
-end
-
 def setup
-  browser
+  # just in case of testing in chrome
+  # @browser = Selenium::WebDriver.for :chrome
+  @browser = Selenium::WebDriver.for :firefox
   @browser.manage.timeouts.implicit_wait = 15
+  @pages = Pages.new(@browser)
 end
 
 def teardown
   @browser.quit
-end
-
-
-def wait_for (element)
-  wait = Selenium::WebDriver::Wait.new(:timeout => 20)
-  wait.until{element.displayed?}
 end

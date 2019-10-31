@@ -1,6 +1,11 @@
 require_relative '../config'
 
 class HomePage
+
+  def initialize(browser)
+    @browser = browser
+  end
+
   def base_page
     "https://www.upwork.com"
   end
@@ -9,15 +14,27 @@ class HomePage
     @browser.get base_page
   end
 
-  def arrow
-    @browser.find_element(:css, '#layout > up-header-visitor-primary-nav > nav > div > div.navbar-collapse.d-none.d-lg-flex.sticky-sublocation > div.navbar-form > up-header-search > up-c-on-click-outside > form > div > div > button.dropdown-toggle.btn.p-xs-left-right > span.caret.glyphicon.air-icon-arrow-expand')
+  def search_form
+    @browser.find_element(:css, ".sticky-sublocation > div.navbar-form > up-header-search > up-c-on-click-outside > form")
   end
 
-  def search_type
-    @browser.find_element(:css, '#layout > up-header-visitor-primary-nav > nav > div > div.navbar-collapse.d-none.d-lg-flex.sticky-sublocation > div.navbar-form > up-header-search > up-c-on-click-outside > form > div > div > up-header-search-menu > ul > li:nth-child(2) > a')
+  def search_type_drop_down_arrow
+    search_form.find_element(:css, ".air-icon-arrow-expand")
+  end
+
+  def search_type_drop_down
+    search_form.find_element(:css, "ul.dropdown-menu")
   end
 
   def search_field
-    @browser.find_element(:css, '#layout > up-header-visitor-primary-nav > nav > div > div.navbar-collapse.d-none.d-lg-flex.sticky-sublocation > div.navbar-form > up-header-search > up-c-on-click-outside > form > div > input.form-control')
+    search_form.find_element(:css,"input.form-control")
   end
+
+  def search(job_type, query)
+    search_type_drop_down_arrow.click
+    search_type_drop_down.find_element(:link_text, job_type).click
+    search_field.send_keys(query)
+    search_field.submit
+  end
+
 end

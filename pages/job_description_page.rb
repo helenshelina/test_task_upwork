@@ -2,15 +2,23 @@ require_relative '../config'
 require 'selenium-webdriver'
 
 class JobDescriptionPage
+  def initialize(browser)
+    @browser = browser
+  end
+
   def job_description
-    @browser.find_element(:css, "#job-details-slider > div > div > visitor-job-details > ng-transclude > div.jd-card.air-card.p-0-top-bottom.m-0-top-bottom.ng-scope > div > div > section:nth-child(3) > div > div")
+    @browser.find_element(:css, ".job-description > div:nth-child(1)")
   end
 
-  def job_rate
-    @browser.find_element(:css, "#job-details-slider > div > div > visitor-job-details > ng-transclude > div.jd-card.air-card.p-0-top-bottom.m-0-top-bottom.ng-scope > div > div > section:nth-child(4) > ul > li:nth-child(1) > strong")
+  def job_description_text
+    job_description.text.downcase
   end
 
-  def job_duration
-    @browser.find_element(:css, "#job-details-slider > div > div > visitor-job-details > ng-transclude > div.jd-card.air-card.p-0-top-bottom.m-0-top-bottom.ng-scope > div > div > section:nth-child(4) > ul > li:nth-child(2) > strong > span.d-none.d-lg-inline")
+  def job_type_text
+    @browser.find_element(:css, ".job-features > li:nth-child(1) > small.text-muted").text.downcase
+  end
+
+  def job_duration_text
+    @browser.find_element(:css, ".job-features > li:nth-child(2) > strong:nth-child(2) > span:nth-child(1)").text.downcase
   end
 end

@@ -2,31 +2,62 @@ require_relative '../config'
 require 'selenium-webdriver'
 
 class SearchResultsPage
-  def results_filter
-    @browser.find_element(:css, "#layout > div.container.responsive-container > div.air-card.p-0-top-bottom.m-0-top-bottom.d-flex-mobile-app.height-100-mobile-app > header-responsive > div > header > div:nth-child(1) > div > div > div.media-right > span > button > span.d-none.d-md-inline.p-sm-right")
+  def initialize(browser)
+    @browser = browser
   end
 
-  def filter_category_drop_down
-    @browser.find_element(:css, "#layout > div.container.responsive-container > div.air-card.p-0-top-bottom.m-0-top-bottom.d-flex-mobile-app.height-100-mobile-app > header-responsive > div > header > filter-tray-responsive > div > div > div > div.col-md-4.ng-scope > div > form > div > up-c-dropdown-search > div > up-c-on-media-change > up-c-on-click-outside > up-c-transition > div > button > up-c-icon > span.caret.glyphicon.air-icon-arrow-expand")
+  def results_filter_button
+    @browser.find_element(:css, "button.toggle-filters-button-responsive")
   end
 
-  def filter_category_search
-    @browser.find_element(:css, "#layout > div.container.responsive-container > div.air-card.p-0-top-bottom.m-0-top-bottom.d-flex-mobile-app.height-100-mobile-app > header-responsive > div > header > filter-tray-responsive > div > div > div > div.col-md-4.ng-scope > div > form > div > up-c-dropdown-search > div > up-c-on-media-change > up-c-on-click-outside > up-c-transition > div > ul > li:nth-child(1) > form > div > input")
+  def filters_section
+    @browser.find_element(:css, "header")
+  end
+
+  def job_category_drop_down_arrow
+    filters_section.find_element(:css, ".sc-up-c-dropdown-search > .air-icon-arrow-expand")
+  end
+
+  def filter_category_search_field
+    filters_section.find_element(:css, "input.form-control.sc-up-c-dropdown-search")
   end
 
   def filter_category_search_result
-    @browser.find_element(:css, "#layout > div.container.responsive-container > div.air-card.p-0-top-bottom.m-0-top-bottom.d-flex-mobile-app.height-100-mobile-app > header-responsive > div > header > filter-tray-responsive > div > div > div > div.col-md-4.ng-scope > div > form > div > up-c-dropdown-search > div > up-c-on-media-change > up-c-on-click-outside > up-c-transition > div > ul > li.active.sc-up-c-dropdown-search > a > span")
+    filters_section.find_element(:css, "ul.dropdown-menu")
   end
 
-  def filter_job_type
-    @browser.find_element(:css, "#layout > div.container.responsive-container > div.air-card.p-0-top-bottom.m-0-top-bottom.d-flex-mobile-app.height-100-mobile-app > header-responsive > div > header > filter-tray-responsive > div > div > div > div:nth-child(2) > div > form > div > div:nth-child(3) > label > span.checkbox-replacement-helper > span")
+  def filter_job_type_section
+   @browser.find_element(:css, "div[data-filter-standard-responsive='jobType']")
   end
 
-  def filter_project_length
-    @browser.find_element(:css, "#layout > div.container.responsive-container > div.air-card.p-0-top-bottom.m-0-top-bottom.d-flex-mobile-app.height-100-mobile-app > header-responsive > div > header > filter-tray-responsive > div > div > div > div:nth-child(5) > div > form > div > div:nth-child(3) > label > span.checkbox-replacement-helper > span")
+  def filter_project_length_section
+    @browser.find_element(:css, "div[data-filter-standard-responsive='duration_v3']")
   end
 
   def search_results_list
     @browser.find_elements(:css, "section.air-card.air-card-hover.job-tile-responsive.ng-scope")
   end
+
+  def filter_jobs(criteria, value)
+    if criteria == "Job category"
+      wait_for(job_category_drop_down_arrow)
+
+      job_category_drop_down_arrow.click
+
+      wait_for(filter_category_search_field)
+
+      filter_category_search_field.send_keys(value)
+
+      wait_for(filter_category_search_result)
+
+      filter_category_search_result.find_element(:partial_link_text, value).click
+
+    elsif criteria == "Job type"
+      filter_job_type_section.find_elements(:css, ".checkbox > label > span.ng-binding").select {|el| el.text == value }.first.click
+
+    elsif criteria == "Job length"
+      filter_project_length_section.find_elements(:css, ".checkbox > label > span.ng-binding").select {|el| el.text == value }.first.click
+    end
+  end
+
 end
